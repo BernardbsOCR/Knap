@@ -5,35 +5,23 @@
 start();
 
 function start() {
-    getProductsList();
+    getListProducts();
 }
 
-function getProductsList() {
-    fetch ("http://localhost:3000/api/products")
-    .then (data => {
-        return data.json();
-    })
-    .then (jsonListProduct => {
-        if (jsonListProduct != undefined && jsonListProduct.length > 0) {
-            createProductCards(jsonListProduct);
-        }
-        else {
-            showError();
-        }
-        
-    })
-    .catch((error) => {
-        showError();
-    });
+async function getListProducts() {
+    let result = await kanapAPi.getListProducts();
+
+    if(result == undefined || result[0].errorType != undefined) {
+        showError(result[0].errorType, "Oops! Une erreur est survenue");
+    }
+    else if(result.length > 0 && result[0]._id != undefined) {
+        createProductCards(result);
+    }
 }
 
-function showError() {
-    alertDialog.showErrorCode("404", "Oops! Une erreur est survenue");
-}
-
-function createProductCards(jsonListProduct){
-    for(let jsonProduct of jsonListProduct){
-        let card = CardsView.getIndexCard(new Product(jsonProduct));
+function createProductCards(listProduct){
+    for(let product of listProduct){
+        let card = CardsView.createIndexCard(new Product(product));
         
         updateUI(card);    
     }

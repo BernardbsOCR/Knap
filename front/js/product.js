@@ -1,87 +1,74 @@
-const currentUrl = document.location.href;
-const url = new URL(currentUrl);
-const productId = url.searchParams.get("id");
-const urlProduct = `http://localhost:3000/api/products/${productId}`;
-let newProduct;
-
 start();
 
 function start() {
-    getProductData();
-
-    enableButtonListener();
+    getProductData();    
 }
 
-function getProductData() {
-    fetch(urlProduct)
-    .then(data => {
-        return data.json();
-    })
-    .then(jsonProduct => {  
-        let product = new Product(jsonProduct);
+async function getProductData() {
+    let product = [{"_id" : getProductId()}];
 
-        if (product._id != undefined) {  
-            updateCurrentProductData(product);
-            updateUI();            
-        }    
-        else {     
-            showError();
-        }          
-    })
-    .catch((error) => {
-        showError();
-    });
+    let result = await kanapAPi.getListProductsData(product, "_id");
+
+    if(result == undefined || result[0].errorType != undefined) {
+        hideUI();
+
+        showError(result[0].errorType, "Oops! Une erreur est survenue");
+    }
+    else if(result.length > 0 && result[0]._id != undefined) {
+        onProductDataLoaded(result[0]);
+    }
 }
 
-function showError() {
-    hideProduct();
-
-    alertDialog.showErrorCode("404", "Oops! Une erreur est survenue");
+function getProductId() {
+    return ULRTools.getHrefProperty("id");
 }
 
-function hideProduct() {
+function getURLProduct() {    
+    return storage.rootUrl + getProductId();
+}
+
+function hideUI() {
     document.getElementById("title").innerText = "Référence introuvable!"
     document.getElementById("addToCart").style.display = "none";
     document.getElementById("colors").disabled = true;
     document.getElementById("quantity").disabled = true;
 }
 
-function updateCurrentProductData(product) {
+function onProductDataLoaded(product) {
     storage.setCurrentProductData(product);
+
+    updateUI();  
+
+    enableButtonListener();
 }
 
-function updateUI() { 
-    let image = document.createElement("img");
-    image.setAttribute("src", storage.currentProductData.imageUrl);
-    image.setAttribute("alt", storage.currentProductData.altTxt);
-
-    document.querySelector(".item__img").appendChild(image);
+function updateUI() {     
     document.getElementById("title").innerText = storage.currentProductData.name;
     document.getElementById("price").innerText = storage.currentProductData.price;
     document.getElementById("description").innerText = storage.currentProductData.description;
+    
+    let image = CardsView.createProductImage(storage.currentProductData.imageUrl, 
+        storage.currentProductData.altTxt);
+
+    document.querySelector(".item__img").appendChild(image);
 
     for (let color of storage.currentProductData.colors) {
-        document.getElementById("colors").appendChild(getColorOption(color));
+        let option = CardsView.createProductColorOption(color);        
+        document.getElementById("colors").appendChild(option);
     }       
 }
 
-function getColorOption(color) {
-    let option = document.createElement("option");
-    option.setAttribute("value", color);
-    option.innerText = color;
-
-    return option;
-}
-
 function enableButtonListener() {
-    document.getElementById("addToCart").addEventListener("click", checkProduct);
+    document.getElementById("addToCart").addEventListener("click", checkForm);
 }
 
-function checkProduct() {
-    if (isValidForm()) {        
+function checkForm() {
+    if (isValidForm()) { 
+        createCartProduct();
+        
         addToCart();
 
-        updateCartCounter(); 
+        updateMenuCounterUI(); 
 
         showNewPurchase();
     }
@@ -92,12 +79,12 @@ function isValidForm() {
     let quantity = parseInt(document.getElementById("quantity").value);    
 
     if (color == "") {    
-        showFormMessage("colors", "* Veuillez choisir une couleur");   
+        showMessage("colors", "* Veuillez choisir une couleur");   
 
         return false;
     }
     else if (quantity <= 0 || quantity > 100) {     
-        showFormMessage("quantity", "* Veuillez sélectionner le nombre d'article(s) (1-100)");
+        showMessage("quantity", "* Veuillez sélectionner le nombre d'article(s) (1-100)");
 
         return false;
     }
@@ -105,28 +92,33 @@ function isValidForm() {
     return true;
 }
 
-function showFormMessage(elementId, message) {
+function showMessage(elementId, message) {
     alertDialog.showMessage("Champ obligatoire", message); 
     document.getElementById(elementId).focus();
 }
 
-function addToCart() {
-    newProduct = {};
-    newProduct.num = storage.clientCart.length;
-    newProduct._id = productId;
-    newProduct.color = document.getElementById("colors").value;
-    newProduct.quantity = parseInt(document.getElementById("quantity").value);
+function createCartProduct() {
+    storage.setCurrentCartProduct(
+        new ProductCart(
+            storage.clientCart.length,
+            getProductId(),
+            document.getElementById("colors").value,
+            parseInt(document.getElementById("quantity").value)
+        )
+    );
+}
 
-    storage.addProduct(newProduct);    
+function addToCart() {   
+    storage.addProduct(storage.currentCartProduct);    
 }
 
 function showNewPurchase() {
     let message = "- <b>Nom du produit :</b>  " + storage.currentProductData.name;
-    message += "<br/><br/>- <b>Couleur :</b>  " + newProduct.color;
-    message += "<br/><br/>- <b>Quantité :</b>  " + newProduct.quantity;
-    message += "<br/><br/>- <b>Prix :</b>  " + storage.currentProductData.price * newProduct.quantity + " €";
+    message += "<br/><br/>- <b>Couleur :</b>  " + storage.currentCartProduct.color;
+    message += "<br/><br/>- <b>Quantité :</b>  " + storage.currentCartProduct.quantity;
+    message += "<br/><br/>- <b>Prix :</b>  " + storage.currentProductData.price * storage.currentCartProduct.quantity + " €";
 
-    let title = newProduct.quantity > 1 ? "Articles ajoutés au panier :" : "Article ajouté au panier :";
+    let title = storage.currentCartProduct.quantity > 1 ? "Articles ajoutés au panier :" : "Article ajouté au panier :";
 
     alertDialog.showMessage(title, message); 
 }

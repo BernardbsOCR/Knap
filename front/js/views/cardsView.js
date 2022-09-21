@@ -1,5 +1,5 @@
 class CardsView {
-    static getIndexCard(product) {
+    static createIndexCard(product) {
         //------------Index card
         let card = document.createElement("a");
         card.setAttribute("href", `./product.html?id=${product._id}`);
@@ -31,7 +31,7 @@ class CardsView {
         return card;
     }
     
-    static getCartCard(num, product, quantity, color) {
+    static createCartCard(num, product, quantity, color) {
         //------------Product cart
         let card = document.createElement("article");
         card.id = "cart__item_" + num; 
@@ -119,5 +119,21 @@ class CardsView {
         card.appendChild(itemContent);
     
         return card;
+    }
+
+    static createProductImage(src, alt) {
+        let image = document.createElement("img");
+        image.setAttribute("src", src);
+        image.setAttribute("alt", alt);
+
+        return image;
+    }
+
+    static createProductColorOption(color) {
+        let option = document.createElement("option");
+        option.setAttribute("value", color);
+        option.innerText = color;
+    
+        return option;
     }
 }

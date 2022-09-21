@@ -2,15 +2,22 @@ let alertDialog;
 let counter;
 let navigationMenu;
 let storage;
+let kanapAPi;
 
 startPage();
 
 function startPage() {
     createStorage();
 
+    createKanapAPI();
+
     createCounter();
     
     createAlertDialog();
+}
+
+function createKanapAPI() {
+    kanapAPi = new KanapAPI(storage.rootUrl);
 }
 
 function createStorage() {
@@ -18,7 +25,7 @@ function createStorage() {
 }
 
 function createAlertDialog() {
-    alertDialog = new AlertDialog("body", "35rem", 3000);
+    alertDialog = new AlertDialog("body", "35rem", 3500);
 }
 
 function createCounter() {
@@ -27,10 +34,10 @@ function createCounter() {
     navigationMenu = document.querySelector("nav");
     navigationMenu.style.alignItems = "center";
 
-    updateCartCounter();  
+    updateMenuCounterUI();  
 }
 
-function updateCartCounter() {
+function updateMenuCounterUI() {
     let count = storage.productsCount;
     counter.innerText = count;   
 
@@ -44,4 +51,8 @@ function updateCartCounter() {
             navigationMenu.removeChild(counter);
         }  
     }
+}
+
+function showError(error, message) {
+    alertDialog.showErrorCode("404", "Oops! Une erreur est survenue");
 }

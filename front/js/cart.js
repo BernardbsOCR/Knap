@@ -1,81 +1,67 @@
 start();
 
 function start() {
-    console.log("*****************");
-    console.log(storage.clientCart.length);
-    console.log("*****************");
+    checkFormUIVisibility(storage.clientCart.length);    
 
-    checkUIVisibility(storage.clientCart.length);
-
-    getProductData(storage.clientCart);
+    getListProductsData();
 }
 
-function getProductData(listData) { 
-    if (listData.length > 0) {   
-        let count = 0;     
-        let productsData = []; 
-        let urlProduct = "";
+async function getListProductsData() {
+    let result = await kanapAPi.getListProductsData(storage.clientCart, "_id");
 
-        for (let product of listData) {  
-            urlProduct = `http://localhost:3000/api/products/${product._id}`;
-
-            fetch(urlProduct)
-            .then(data => {
-                return data.json();
-            })
-            .then(jsonProduct => {                
-                productsData.push(new Product(jsonProduct));
-                count ++;
-
-                if(count == listData.length) {                   
-                    setupUI(productsData);
-                }
-            })
-            .catch((error) => {
-                showError(error);
-            });            
-        }        
+    if(result == undefined || result[0].errorType != undefined) {
+        showError(result[0].errorType, "Oops! Une erreur est survenue");
+    }
+    else if(result.length > 0 && result[0]._id != undefined) {
+        setupUI(result);
     }
 }
 
 function setupUI(productsData) {
-    updateProductsData(productsData);
+    updateCartProductsData(productsData);
 
     createCards();
 
     updateUI();
 }
 
-function showError(error) {
-    alertDialog.showErrorCode("404", error);
-}
-
-function updateProductsData(productsData) {    
+function updateCartProductsData(productsData) {    
     storage.setCartProductsData(productsData);
 }
 
 function createCards() {
-    for(let i = 0; i < storage.cartProductsData.length; i++) {
-        let card = CardsView.getCartCard(storage.clientCart[i].num, 
-                                            storage.cartProductsData[i], 
-                                            storage.clientCart[i].quantity, 
-                                            storage.clientCart[i].color);
-    
-        card.querySelector(".deleteItem").addEventListener('click', onItemDeleteListener);
-        card.querySelector("input").addEventListener('change', onItemCountListener);
+    if (storage.cartProductsData != undefined && storage.cartProductsData.length > 0) {
+        for(let i = 0; i < storage.cartProductsData.length; i++) {
+            let card = CardsView.createCartCard(   
+                        storage.clientCart[i].num, 
+                        storage.cartProductsData[i], 
+                        storage.clientCart[i].quantity, 
+                        storage.clientCart[i].color);
 
-        document.getElementById("cart__items").appendChild(card);
-    }
+            addItemCard(card);
+        
+            addItemCardListener(card);
+        }
+    }    
+}
+
+function addItemCard(card) {
+    document.getElementById("cart__items").appendChild(card);
+}
+
+function addItemCardListener(card) {
+    card.querySelector(".deleteItem").addEventListener('click', onItemDeleteListener);
+    card.querySelector("input").addEventListener('change', onItemCountListener);
 }
 
 function updateUI() {
     document.getElementById("totalQuantity").innerText = storage.productsCount;
     document.getElementById("totalPrice").innerText = storage.totalPrice;
 
-    updateCartCounter();
+    updateMenuCounterUI();
 }
 
-function checkUIVisibility(count) {
+function checkFormUIVisibility(count) {
     let title;
 
     if (count > 0) {
