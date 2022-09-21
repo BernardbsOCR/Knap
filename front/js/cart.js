@@ -9,11 +9,11 @@ function start() {
 async function getListProductsData() {
     let result = await kanapAPi.getListProductsData(storage.clientCart, "_id");
 
-    if(result == undefined || result[0].errorType != undefined) {
-        showError(result[0].errorType, "Oops! Une erreur est survenue");
-    }
-    else if(result.length > 0 && result[0]._id != undefined) {
+    if(kanapAPi.isValidResult(result)) {
         setupUI(result);
+    }
+    else {
+        showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
     }
 }
 
@@ -102,7 +102,7 @@ function onItemCountListener(event) {
         updateUI();
     }
     else {
-        showFormMessage(event.target.id, "* Veuillez sélectionner le nombre d'article(s) (1-100)");
+        showFormMessage(event.target.id, DialogMSG.FORM_ALERT_ARTICLE_QUANTITY);
     }
 }
 

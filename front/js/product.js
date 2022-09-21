@@ -9,13 +9,13 @@ async function getProductData() {
 
     let result = await kanapAPi.getListProductsData(product, "_id");
 
-    if(result == undefined || result[0].errorType != undefined) {
+    if(kanapAPi.isValidResult(result)) {
+        setupUI(result[0]);
+    }
+    else {
         hideUI();
 
-        showError(result[0].errorType, "Oops! Une erreur est survenue");
-    }
-    else if(result.length > 0 && result[0]._id != undefined) {
-        onProductDataLoaded(result[0]);
+        showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
     }
 }
 
@@ -28,13 +28,13 @@ function getURLProduct() {
 }
 
 function hideUI() {
-    document.getElementById("title").innerText = "Référence introuvable!"
+    document.getElementById("title").innerText = DialogMSG.MSG_ERROR_NOT_FOUND;
     document.getElementById("addToCart").style.display = "none";
     document.getElementById("colors").disabled = true;
     document.getElementById("quantity").disabled = true;
 }
 
-function onProductDataLoaded(product) {
+function setupUI(product) {
     storage.setCurrentProductData(product);
 
     updateUI();  
@@ -71,6 +71,8 @@ function checkForm() {
         updateMenuCounterUI(); 
 
         showNewPurchase();
+
+        resetForm();
     }
 }
 
@@ -79,12 +81,12 @@ function isValidForm() {
     let quantity = parseInt(document.getElementById("quantity").value);    
 
     if (color == "") {    
-        showMessage("colors", "* Veuillez choisir une couleur");   
+        showMessage("colors", DialogMSG.FORM_ALERT_ARTICLE_COLOR);   
 
         return false;
     }
     else if (quantity <= 0 || quantity > 100) {     
-        showMessage("quantity", "* Veuillez sélectionner le nombre d'article(s) (1-100)");
+        showMessage("quantity", DialogMSG.FORM_ALERT_ARTICLE_QUANTITY);
 
         return false;
     }
@@ -113,15 +115,14 @@ function addToCart() {
 }
 
 function showNewPurchase() {
-    let message = "- <b>Nom du produit :</b>  " + storage.currentProductData.name;
-    message += "<br/><br/>- <b>Couleur :</b>  " + storage.currentCartProduct.color;
-    message += "<br/><br/>- <b>Quantité :</b>  " + storage.currentCartProduct.quantity;
-    message += "<br/><br/>- <b>Prix :</b>  " + storage.currentProductData.price * storage.currentCartProduct.quantity + " €";
-
-    let title = storage.currentCartProduct.quantity > 1 ? "Articles ajoutés au panier :" : "Article ajouté au panier :";
+    let message = DialogMSG.getPurchaseMessage(storage.currentProductData, storage.currentProductData.price);
+    let title = storage.currentCartProduct.quantity > 1 ? DialogMSG.CART_ADD_PRODUCTS : DialogMSG.CART_ADD_PRODUCT;
 
     alertDialog.showMessage(title, message); 
 }
 
-
+function resetForm() {
+    document.getElementById("colors").value = "";
+    document.getElementById("quantity").value = 0;
+}
     

@@ -68,4 +68,13 @@ class KanapAPI {
             
         });
     }
+
+    isValidResult(result) {
+        if(result[0].errorType != undefined) {
+            return false;
+        }
+        else if(result != undefined && result.length > 0 && result[0]._id != undefined) {
+            return true;
+        }
+    }
 }
