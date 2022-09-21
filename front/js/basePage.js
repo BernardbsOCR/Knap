@@ -18,7 +18,7 @@ function createStorage() {
 }
 
 function createAlertDialog() {
-    alertDialog = new AlertDialog("body", "28rem", 3000);
+    alertDialog = new AlertDialog("body", "35rem", 3000);
 }
 
 function createCounter() {

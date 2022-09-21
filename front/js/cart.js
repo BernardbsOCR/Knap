@@ -14,9 +14,10 @@ function getProductData(listData) {
     if (listData.length > 0) {   
         let count = 0;     
         let productsData = []; 
+        let urlProduct = "";
 
         for (let product of listData) {  
-            let urlProduct = `http://localhost:3000/api/products/${product._id}`;
+            urlProduct = `http://localhost:3000/api/products/${product._id}`;
 
             fetch(urlProduct)
             .then(data => {
@@ -27,18 +28,26 @@ function getProductData(listData) {
                 count ++;
 
                 if(count == listData.length) {                   
-                    updateProductsData(productsData);
-
-                    createCards();
-
-                    updateUI();
+                    setupUI(productsData);
                 }
             })
             .catch((error) => {
-                showError();
+                showError(error);
             });            
         }        
     }
+}
+
+function setupUI(productsData) {
+    updateProductsData(productsData);
+
+    createCards();
+
+    updateUI();
+}
+
+function showError(error) {
+    alertDialog.showErrorCode("404", error);
 }
 
 function updateProductsData(productsData) {    
@@ -47,7 +56,7 @@ function updateProductsData(productsData) {
 
 function createCards() {
     for(let i = 0; i < storage.cartProductsData.length; i++) {
-        let card = CardsView.getProductCard(storage.clientCart[i].num, 
+        let card = CardsView.getCartCard(storage.clientCart[i].num, 
                                             storage.cartProductsData[i], 
                                             storage.clientCart[i].quantity, 
                                             storage.clientCart[i].color);
@@ -83,20 +92,14 @@ function checkUIVisibility(count) {
     document.querySelector("#cartAndFormContainer h1").innerText = title;
 }
 
-function showError() {
-    alertDialog.showErrorCode("404", "Oops! Une erreur est survenue");
-}
-
 function onItemDeleteListener(event) {
-    removeItem(getItemId(event));    
+    removeItem(getItemId(event), event);    
 }
 
-function removeItem(itemId) {
-    let card = document.getElementById("cart__item_" + itemId);
-
+function removeItem(itemId, event) {
     storage.removeProduct(itemId);
 
-    removeCardUI(card);      
+    removeCardUI(event.target.closest("#cart__item_" + itemId));      
 
     updateUI();
 
@@ -107,8 +110,7 @@ function onItemCountListener(event) {
     let itemId = getItemId(event);
     let quantity = event.target.value;
 
-    if (quantity <= 100) {
-        storage.cartProductsData[itemId].quantity = quantity;
+    if (quantity >= 1 && quantity <= 100) {
         storage.updateProductQuantity(itemId, quantity);
 
         updateUI();

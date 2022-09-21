@@ -23,7 +23,7 @@ class AlertDialog {
 
     #getAlertDialog(width) {
         let dialog = document.createElement("div");
-        dialog.setAttribute("id", "alert-dialog");
+        dialog.id = "alert-dialog";
         dialog.style.width = width;
         dialog.style.maxWidth = "80%";
         dialog.style.height = "fit-content";
@@ -31,7 +31,7 @@ class AlertDialog {
         dialog.style.left = "50%";
         dialog.style.top = "25%";
         dialog.style.padding = "1.5rem";
-        dialog.style.background = "var(--footer-secondary-color)";
+        dialog.style.background = "white";
         dialog.style.boxShadow = "0 .3rem 1rem #000000";
         dialog.style.borderRadius = "0.5rem";
     
@@ -42,12 +42,12 @@ class AlertDialog {
         let title = document.createElement("h2");
         title.style.width = "auto";
         title.style.height = "fit-content";
-        title.style.color = "white";
+        title.style.color = "black";
         title.style.margin = "1rem";
         title.style.marginBottom = "2rem";
         title.style.paddingBottom = "0.5rem";
         title.style.textAlign = "center";
-        title.style.borderBottom = ".2px solid white";
+        title.style.borderBottom = ".2px solid black";
         
         return title;
     }
@@ -58,6 +58,7 @@ class AlertDialog {
         description.style.height = "fit-content";
         description.style.margin = "1rem";
         description.style.textAlign = "center";
+        description.style.color = "black";
 
         return description;
     } 
@@ -83,7 +84,7 @@ class AlertDialog {
     #updateMessageSetup() {
         this.alertTitle.style.fontWeight = "500";
         this.alertTitle.style.fontSize = "1.3rem";
-        this.alertTitle.style.color = "white";
+        this.alertTitle.style.color = "black";
         this.alertTitle.style.textAlign = "left";
 
         this.alertDescription.style.textAlign = "left"; 
@@ -125,14 +126,14 @@ class AlertDialog {
         }
     }
 
-    /*createButton(name) {
+    createButton(name) {
         closeButton = document.createElement("a");
         closeButton.setAttribute("href", "./index.html");
         closeButton.style.background = "black";
         closeButton.style.textDecoration = "none";
     
         closeButton.innerText(name);
-    }*/
+    }
 }
 
 

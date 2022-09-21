@@ -47,7 +47,7 @@ class Storage {
             for(let i = 0; i < this.cartProductsData.length; i++) {
                 totalPrice += parseInt(this.cartProductsData[i].price) * parseInt(this.clientCart[i].quantity);
             }
-        }        
+        }  
 
         return totalPrice;
     }
@@ -86,16 +86,26 @@ class Storage {
     }
     
     removeProduct(productId) {   
-        let removeId = this.clientCart.findIndex((id) => id.num == productId);
+        let id = this.#getProductId(productId);
 
-        this.clientCart.splice(removeId, 1);
+        this.clientCart.splice(id, 1);       
+
+        this.cartProductsData.splice(id, 1);   
+
         this.#storeData();
-
-        this.cartProductsData.splice(removeId, 1);   
     }
 
     updateProductQuantity(productId, quantity) {
-        this.clientCart[productId].quantity = quantity;
+        let id = this.#getProductId(productId);
+
+        this.clientCart[id].quantity = quantity;       
+
+        this.cartProductsData[id].quantity = quantity;
+
         this.#storeData();
+    }
+
+    #getProductId(productId) {
+        return this.clientCart.findIndex((id) => id.num == productId);
     }
 }
