@@ -115,12 +115,14 @@ function onItemCountListener(event) {
         updateUI();
     }
     else {
-        showFormMessage(event.target.id, DialogMSG.FORM_ALERT_ARTICLE_QUANTITY);
+        showFormMessage(event.target.id, 
+            DialogMSG.FORM_PRODUCT_TITLE_INVALID_QUANTITY, 
+            DialogMSG.FORM_PRODUCT_ALERT_QUANTITY);
     }
 }
 
-function showFormMessage(elementId, message) {
-    alertDialog.showMessage("Quantité non valide", message); 
+function showFormMessage(elementId, title, message) {
+    alertDialog.showMessage(title, message); 
     document.getElementById(elementId).focus();
 }
 

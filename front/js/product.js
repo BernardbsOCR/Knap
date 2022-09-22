@@ -22,10 +22,6 @@ function getProductId() {
     return ULRTools.getHrefPropertyValue("id");
 }
 
-function getURLProduct() {    
-    return storage.rootUrl + getProductId();
-}
-
 function setupUI(product) {
     storage.setCurrentProductData(product);
 
@@ -97,7 +93,7 @@ function isValidForm() {
 }
 
 function showMessage(elementId, message) {
-    alertDialog.showMessage("Champ obligatoire", message); 
+    alertDialog.showMessage(DialogMSG.FORM_PRODUCT_TITLE_REQUIRED_FIELD, message); 
     document.getElementById(elementId).focus();
 }
 
@@ -111,7 +107,7 @@ function addCurrentProduct() {
 
 function showDialogPurchase() {
     let message = DialogMSG.getPurchaseMessage(storage.currentCartProduct, storage.currentProductData);
-    let title = storage.currentCartProduct.quantity > 1 ? DialogMSG.FORM_PRODUCT_ADDED_PRODUCTS : DialogMSG.FORM_PRODUCT_ADDED_PRODUCT;
+    let title = DialogMSG.getPurchaseTitle(storage.currentCartProduct);
 
     alertDialog.showMessage(title, message); 
 }
