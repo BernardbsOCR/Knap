@@ -53,6 +53,10 @@ function updateMenuCounterUI() {
     }
 }
 
-function showError(error, message) {
-    alertDialog.showErrorCode("404", "Oops! Une erreur est survenue");
+function showError(errorType, message) {
+    alertDialog.showErrorCode("404", message);
+    
+    console.log("********basePage => showError");
+    console.log(errorType);
+    console.log("********basePage => showError");
 }

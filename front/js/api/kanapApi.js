@@ -45,10 +45,10 @@ class KanapAPI {
                         return data.json();
                     })
                     .then(jsonProduct => {     
-                        let productData = new Product(jsonProduct);
+                        let productData = new ProductData(jsonProduct);
 
                         if (productData[key] != undefined) {
-                            productsData.push(new Product(jsonProduct));
+                            productsData.push(new ProductData(jsonProduct));
                         }
 
                         count ++;
@@ -70,7 +70,7 @@ class KanapAPI {
     }
 
     isValidResult(result) {
-        if(result[0].errorType != undefined) {
+        if(result.length > 0 && result[0].errorType != undefined) {
             return false;
         }
         else if(result != undefined && result.length > 0 && result[0]._id != undefined) {

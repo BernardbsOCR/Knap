@@ -2,13 +2,13 @@
  * Class Product 
  */
 
-class Product {
+class ProductData {
     constructor(jsonProduct) {
         jsonProduct && Object.assign(this, jsonProduct);        
     }
 }
 
-class ProductCart {
+class ProductCardCart {
     constructor(num, productId, color, quantity) {
         this.num = num;
         this._id = productId;

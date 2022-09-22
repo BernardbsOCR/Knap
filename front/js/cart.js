@@ -9,11 +9,20 @@ function start() {
 async function getListProductsData() {
     let result = await kanapAPi.getListProductsData(storage.clientCart, "_id");
 
-    if(kanapAPi.isValidResult(result)) {
+    if(result.length > 0 && result[0].errorType != undefined) {
+        showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
+    }
+    else if(result.length > 0 && result[0]._id != undefined) {
         setupUI(result);
     }
-    else {
+}
+
+function isValidResult(result) {
+    if(result[0].errorType != undefined) {
         showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
+    }
+    else if(result != undefined && result.length > 0 && result[0]._id != undefined) {
+        setupUI(result);
     }
 }
 
@@ -79,17 +88,21 @@ function checkFormUIVisibility(count) {
 }
 
 function onItemDeleteListener(event) {
-    removeItem(getItemId(event), event);    
+    removeItem(getItemId(event), event);   
+    
+    updateUI();
+
+    checkFormUIVisibility(storage.productsCount);
 }
 
 function removeItem(itemId, event) {
     storage.removeProduct(itemId);
 
     removeCardUI(event.target.closest("#cart__item_" + itemId));      
+}
 
-    updateUI();
-
-    checkUIVisibility(storage.productsCount);
+function removeCardUI(card) {
+    document.getElementById("cart__items").removeChild(card);
 }
 
 function onItemCountListener(event) {
@@ -125,6 +138,3 @@ function getCardPrice(card) {
     return parseInt(card.querySelector(".cart__item__content__description :nth-child(3)").innerText);
 }
 
-function removeCardUI(card) {
-    document.getElementById("cart__items").removeChild(card);
-}

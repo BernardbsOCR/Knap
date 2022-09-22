@@ -45,8 +45,8 @@ class Storage {
 
     get productsCount() {
         let total = 0;
-        if(this.clientCart.length > 0) {
-            for(let product of this.clientCart) {
+        if (this.clientCart.length > 0) {
+            for (let product of this.clientCart) {
                 total += parseInt(product.quantity);
             }
         }
@@ -57,8 +57,8 @@ class Storage {
     get totalPrice() {
         let totalPrice = 0;
 
-        if(this.cartProductsData.length > 0) {
-            for(let i = 0; i < this.cartProductsData.length; i++) {
+        if (this.cartProductsData.length > 0) {
+            for (let i = 0; i < this.cartProductsData.length; i++) {
                 totalPrice += parseInt(this.cartProductsData[i].price) * parseInt(this.clientCart[i].quantity);
             }
         }  
@@ -66,26 +66,32 @@ class Storage {
         return totalPrice;
     }
     
-    addProduct(product) {
-        if (product != undefined) {
-            let id = this.#isAlreadyAdded(product, this.clientCart);
-            
-            if(id != -1) {
-                this.clientCart[id].quantity += product.quantity;
-            }
-            else {
-                this.clientCart.push(product);
-            }       
-    
-            this.#storeData();
-        }    
+    addCurrentProduct(productId, color, quantity) {
+        let card = new ProductCardCart(
+                    this.clientCart.length,
+                    productId,
+                    color,
+                    quantity);        
+        
+        this.setCurrentCartProduct(card);
+
+        let id = this.#isAlreadyAdded();
+        
+        if (id != -1) {
+            this.clientCart[id].quantity += this.currentCartProduct.quantity;
+        }
+        else {
+            this.clientCart.push(this.currentCartProduct);
+        }       
+
+        this.#storeData();  
     }
     
-    #isAlreadyAdded(newProduct) {
+    #isAlreadyAdded() {
         if (this.clientCart.length > 0) {
             let count = 0;
             for (let product of this.clientCart) {
-                if (product._id == newProduct._id && product.color == newProduct.color) {
+                if (product._id == this.currentCartProduct._id && product.color == this.currentCartProduct.color) {
                     return count;
                 }
                 count++;
@@ -100,7 +106,7 @@ class Storage {
     }
     
     removeProduct(productId) {   
-        let id = this.#getProductId(productId);
+        let id = this.#getProductPosition(productId);
 
         this.clientCart.splice(id, 1);       
 
@@ -109,17 +115,15 @@ class Storage {
         this.#storeData();
     }
 
-    updateProductQuantity(productId, quantity) {
-        let id = this.#getProductId(productId);
+    updateProductQuantity(itemId, quantity) {
+        let id = this.#getProductPosition(itemId);
 
         this.clientCart[id].quantity = quantity;       
-
-        this.cartProductsData[id].quantity = quantity;
 
         this.#storeData();
     }
 
-    #getProductId(productId) {
-        return this.clientCart.findIndex((id) => id.num == productId);
+    #getProductPosition(itemId) {
+        return this.clientCart.findIndex((id) => id.num == itemId);
     }
 }

@@ -6,32 +6,24 @@ function start() {
 
 async function getProductData() {
     let product = [{"_id" : getProductId()}];
-
     let result = await kanapAPi.getListProductsData(product, "_id");
 
-    if(kanapAPi.isValidResult(result)) {
-        setupUI(result[0]);
-    }
-    else {
+    if(result.length > 0 && result[0].errorType != undefined) {
         hideUI();
 
         showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
     }
+    else if(result.length > 0 && result[0]._id != undefined) {
+        setupUI(result[0]);
+    }
 }
 
 function getProductId() {
-    return ULRTools.getHrefProperty("id");
+    return ULRTools.getHrefPropertyValue("id");
 }
 
 function getURLProduct() {    
     return storage.rootUrl + getProductId();
-}
-
-function hideUI() {
-    document.getElementById("title").innerText = DialogMSG.MSG_ERROR_NOT_FOUND;
-    document.getElementById("addToCart").style.display = "none";
-    document.getElementById("colors").disabled = true;
-    document.getElementById("quantity").disabled = true;
 }
 
 function setupUI(product) {
@@ -58,21 +50,31 @@ function updateUI() {
     }       
 }
 
-function enableButtonListener() {
-    document.getElementById("addToCart").addEventListener("click", checkForm);
+function hideUI() {
+    document.getElementById("title").innerText = DialogMSG.MSG_ERROR_NOT_FOUND;
+    document.getElementById("addToCart").style.display = "none";
+    document.getElementById("colors").disabled = true;
+    document.getElementById("quantity").disabled = true;
 }
 
-function checkForm() {
-    if (isValidForm()) { 
-        createCartProduct();
-        
-        addToCart();
+function resetFormUI() {
+    document.getElementById("colors").value = "";
+    document.getElementById("quantity").value = 0;
+}
+
+function enableButtonListener() {
+    document.getElementById("addToCart").addEventListener("click", onAddToCart);
+}
+
+function onAddToCart() {
+    if (isValidForm()) {         
+        addCurrentProduct();
 
         updateMenuCounterUI(); 
 
-        showNewPurchase();
+        showDialogPurchase();
 
-        resetForm();
+        resetFormUI();
     }
 }
 
@@ -81,12 +83,12 @@ function isValidForm() {
     let quantity = parseInt(document.getElementById("quantity").value);    
 
     if (color == "") {    
-        showMessage("colors", DialogMSG.FORM_ALERT_ARTICLE_COLOR);   
+        showMessage("colors", DialogMSG.FORM_PRODUCT_ALERT_COLOR);   
 
         return false;
     }
-    else if (quantity <= 0 || quantity > 100) {     
-        showMessage("quantity", DialogMSG.FORM_ALERT_ARTICLE_QUANTITY);
+    else if (quantity < 1 || quantity > 100) {     
+        showMessage("quantity", DialogMSG.FORM_PRODUCT_ALERT_QUANTITY);
 
         return false;
     }
@@ -99,30 +101,20 @@ function showMessage(elementId, message) {
     document.getElementById(elementId).focus();
 }
 
-function createCartProduct() {
-    storage.setCurrentCartProduct(
-        new ProductCart(
-            storage.clientCart.length,
-            getProductId(),
-            document.getElementById("colors").value,
-            parseInt(document.getElementById("quantity").value)
-        )
-    );
+function addCurrentProduct() {
+    let id = getProductId();
+    let color = document.getElementById("colors").value;
+    let quantity = parseInt(document.getElementById("quantity").value);
+
+    storage.addCurrentProduct(id, color, quantity);
 }
 
-function addToCart() {   
-    storage.addProduct(storage.currentCartProduct);    
-}
-
-function showNewPurchase() {
-    let message = DialogMSG.getPurchaseMessage(storage.currentProductData, storage.currentProductData.price);
-    let title = storage.currentCartProduct.quantity > 1 ? DialogMSG.CART_ADD_PRODUCTS : DialogMSG.CART_ADD_PRODUCT;
+function showDialogPurchase() {
+    let message = DialogMSG.getPurchaseMessage(storage.currentCartProduct, storage.currentProductData);
+    let title = storage.currentCartProduct.quantity > 1 ? DialogMSG.FORM_PRODUCT_ADDED_PRODUCTS : DialogMSG.FORM_PRODUCT_ADDED_PRODUCT;
 
     alertDialog.showMessage(title, message); 
 }
 
-function resetForm() {
-    document.getElementById("colors").value = "";
-    document.getElementById("quantity").value = 0;
-}
+
     

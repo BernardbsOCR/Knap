@@ -5,3 +5,4 @@ function start() {
     console.log(storage.clientCart.length);
     console.log("*****************");
 }
+
