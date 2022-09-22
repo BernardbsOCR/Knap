@@ -12,6 +12,8 @@ class AlertDialog {
         this.#setupUI();
     }
 
+    //************************************* */
+
     #setupUI() {
         this.alertDialog = this.#getAlertDialog(this.width);
         this.alertTitle = this.#getAlertTitle();  

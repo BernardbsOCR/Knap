@@ -8,6 +8,8 @@ function start() {
     getListProducts();
 }
 
+//************************************* */
+
 async function getListProducts() {
     let result = await kanapAPi.getListProducts();
 
@@ -18,6 +20,8 @@ async function getListProducts() {
         setupUI(result);
     }
 }
+
+//************************************* */
 
 function setupUI(listProduct){
     for(let product of listProduct){

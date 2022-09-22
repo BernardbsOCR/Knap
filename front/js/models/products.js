@@ -8,6 +8,8 @@ class ProductData {
     }
 }
 
+//************************************* */
+
 class ProductCardCart {
     constructor(num, productId, color, quantity) {
         this.num = num;

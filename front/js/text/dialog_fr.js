@@ -8,7 +8,22 @@ class DialogMSG {
     static FORM_PRODUCT_ALERT_COLOR = "* Veuillez choisir une couleur";
     static FORM_PRODUCT_ADDED_PRODUCT = "Article ajouté au panier :";
     static FORM_PRODUCT_ADDED_PRODUCTS = "Articles ajoutés au panier :";
+
+    static FORM_ORDER_ERROR_REQUIRED = "Champ obligatoire";
+    static FORM_ORDER_ERROR_FIRST_NAME = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 30 caractères maximum";
+    static FORM_ORDER_ERROR_LAST_NAME = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 30 caractères maximum";
+    static FORM_ORDER_ERROR_ADDRESS = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 100 caractères maximum";
+    static FORM_ORDER_ERROR_CITY = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 50 caractères maximum";
+    static FORM_ORDER_ERROR_EMAIL = "Veuillez saisir une adresse email valide";
     
+    static getFormOrderErrorText() {
+        let errors = [this.FORM_ORDER_ERROR_FIRST_NAME, 
+            this.FORM_ORDER_ERROR_LAST_NAME,
+            this.FORM_ORDER_ERROR_ADDRESS,
+            this.FORM_ORDER_ERROR_CITY,
+            this.FORM_ORDER_ERROR_EMAIL];
+        return errors;
+    }
 
     static getPurchaseMessage(currentCartProduct, currentProductData) {
         let message = "- <b>Nom du produit :</b>  " + currentProductData.name;

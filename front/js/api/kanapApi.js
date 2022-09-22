@@ -5,9 +5,13 @@ class KanapAPI {
         this.#mRootUrl = url;
     }
 
+    //************************************* */
+
     get rootUrl() {
         return this.#mRootUrl;
     }
+
+    //************************************* */
 
     getListProducts() {
         return new Promise(data => {

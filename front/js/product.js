@@ -4,6 +4,12 @@ function start() {
     getProductData();    
 }
 
+//************************************* */
+
+function getProductId() {
+    return ULRTools.getHrefPropertyValue("id");
+}
+
 async function getProductData() {
     let product = [{"_id" : getProductId()}];
     let result = await kanapAPi.getListProductsData(product, "_id");
@@ -18,12 +24,10 @@ async function getProductData() {
     }
 }
 
-function getProductId() {
-    return ULRTools.getHrefPropertyValue("id");
-}
+//************************************* */
 
 function setupUI(product) {
-    storage.setCurrentProductData(product);
+    storage.currentProductData = product;
 
     updateUI();  
 
@@ -58,6 +62,8 @@ function resetFormUI() {
     document.getElementById("quantity").value = 0;
 }
 
+//************************************* */
+
 function enableButtonListener() {
     document.getElementById("addToCart").addEventListener("click", onAddToCart);
 }
@@ -72,6 +78,14 @@ function onAddToCart() {
 
         resetFormUI();
     }
+}
+
+function addCurrentProduct() {
+    let id = getProductId();
+    let color = document.getElementById("colors").value;
+    let quantity = parseInt(document.getElementById("quantity").value);
+
+    storage.addCurrentProduct(id, color, quantity);
 }
 
 function isValidForm() {
@@ -92,17 +106,11 @@ function isValidForm() {
     return true;
 }
 
+//************************************* */
+
 function showMessage(elementId, message) {
     alertDialog.showMessage(DialogMSG.FORM_PRODUCT_TITLE_REQUIRED_FIELD, message); 
     document.getElementById(elementId).focus();
-}
-
-function addCurrentProduct() {
-    let id = getProductId();
-    let color = document.getElementById("colors").value;
-    let quantity = parseInt(document.getElementById("quantity").value);
-
-    storage.addCurrentProduct(id, color, quantity);
 }
 
 function showDialogPurchase() {

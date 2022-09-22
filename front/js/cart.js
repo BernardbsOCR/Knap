@@ -1,3 +1,5 @@
+let form;
+
 start();
 
 function start() {
@@ -5,6 +7,8 @@ function start() {
 
     getListProductsData();
 }
+
+//************************************* */
 
 async function getListProductsData() {
     let result = await kanapAPi.getListProductsData(storage.clientCart, "_id");
@@ -26,16 +30,20 @@ function isValidResult(result) {
     }
 }
 
+//************************************* */
+
 function setupUI(productsData) {
     updateCartProductsData(productsData);
 
     createCards();
 
     updateUI();
+
+    createOrderForm();
 }
 
 function updateCartProductsData(productsData) {    
-    storage.setCartProductsData(productsData);
+    storage.cartProductsData = productsData;
 }
 
 function createCards() {
@@ -63,6 +71,8 @@ function addItemCardListener(card) {
     card.querySelector("input").addEventListener('change', onItemCountListener);
 }
 
+//************************************* */
+
 function updateUI() {
     document.getElementById("totalQuantity").innerText = storage.productsCount;
     document.getElementById("totalPrice").innerText = storage.totalPrice;
@@ -87,6 +97,8 @@ function checkFormUIVisibility(count) {
     document.querySelector("#cartAndFormContainer h1").innerText = title;
 }
 
+//************************************* */
+
 function onItemDeleteListener(event) {
     removeItem(getItemId(event), event);   
     
@@ -104,6 +116,8 @@ function removeItem(itemId, event) {
 function removeCardUI(card) {
     document.getElementById("cart__items").removeChild(card);
 }
+
+//************************************* */
 
 function onItemCountListener(event) {
     let itemId = getItemId(event);
@@ -126,6 +140,8 @@ function showFormMessage(elementId, title, message) {
     document.getElementById(elementId).focus();
 }
 
+//************************************* */
+
 function getItemId(event) {
     let id = event.target.id;
     id = id.substring(id.length - 1);    
@@ -140,3 +156,37 @@ function getCardPrice(card) {
     return parseInt(card.querySelector(".cart__item__content__description :nth-child(3)").innerText);
 }
 
+//************************************* */
+
+function createOrderForm() {
+    let formView = document.querySelector("form");
+    let listRegExp = Data.getFormOrderRegExp();
+    let listErrorText = Data.getFormOrderFieldsText(DialogMSG.getFormOrderErrorText());
+
+    form = new FormOrderCart(formView, listRegExp, listErrorText);
+
+    addOrderFormListener(formView);
+}
+
+function addOrderFormListener(formView) {  
+    formView.addEventListener("input", (event) => {    
+        onFieldResponse(event.target);
+    });
+
+    formView.addEventListener("submit", (event) => {   
+        event.preventDefault(); 
+        onSubmitResponse(event.target);
+    });
+}
+
+function onFieldResponse(target) {  
+    let isValidField = form.checkField(target) ? true : false;
+
+    let message = isValidField ? "" : form.getErrorMessage(target.id);
+
+    form.setErrorFieldText(target, message);
+}
+
+function onSubmitResponse(target) {       
+    let contact = form.getClientContactData();
+}

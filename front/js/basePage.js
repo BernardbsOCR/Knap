@@ -16,6 +16,8 @@ function startPage() {
     createAlertDialog();
 }
 
+//************************************* */
+
 function createKanapAPI() {
     kanapAPi = new KanapAPI(storage.rootUrl);
 }

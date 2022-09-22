@@ -3,6 +3,7 @@ class Storage {
     #mCartProductsData;
     #mCurrentProductData;
     #mCurrentCartProduct;
+
     #mrootUrl = "http://localhost:3000/api/products/";
 
     constructor() {
@@ -10,6 +11,8 @@ class Storage {
         this.#mCartProductsData = [];
         this.#mCurrentProductData = {};
     }
+
+    //************************************* */
 
     get clientCart() {
         return this.#mClientCart;
@@ -19,7 +22,7 @@ class Storage {
         return this.#mCartProductsData;
     }   
 
-    setCartProductsData(data) {
+    set cartProductsData(data) {
         this.#mCartProductsData = data;
     }
 
@@ -27,7 +30,7 @@ class Storage {
         return this.#mCurrentProductData;
     }
 
-    setCurrentProductData(productData) {
+    set currentProductData(productData) {
         this.#mCurrentProductData = productData;
     }
 
@@ -35,7 +38,7 @@ class Storage {
         return this.#mCurrentCartProduct;
     }
     
-    setCurrentCartProduct(product) {
+    set currentCartProduct(product) {
         this.#mCurrentCartProduct = product;
     }
 
@@ -65,6 +68,8 @@ class Storage {
 
         return totalPrice;
     }
+
+    //************************************* */
     
     addCurrentProduct(productId, color, quantity) {
         let card = new ProductCardCart(
@@ -73,7 +78,7 @@ class Storage {
                     color,
                     quantity);        
         
-        this.setCurrentCartProduct(card);
+        this.currentCartProduct = card;
 
         let id = this.#isAlreadyAdded();
         
