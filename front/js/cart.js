@@ -21,15 +21,6 @@ async function getListProductsData() {
     }
 }
 
-function isValidResult(result) {
-    if(result[0].errorType != undefined) {
-        showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
-    }
-    else if(result != undefined && result.length > 0 && result[0]._id != undefined) {
-        setupUI(result);
-    }
-}
-
 //************************************* */
 
 function setupUI(productsData) {
