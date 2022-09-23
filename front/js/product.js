@@ -1,5 +1,5 @@
 //************************************* */
-Promise.all([
+/*Promise.all([
     loadFile("../js/models/products.js"),
     loadFile("../js/tools/data.js"),
     loadFile("../js/text/dialog_fr.js"),
@@ -23,8 +23,10 @@ function loadFile(file) {
 
         document.body.appendChild(scriptEle);
     });
-}
+}*/
 //************************************* */
+
+start();
 
 function start() {
     getProductData();    

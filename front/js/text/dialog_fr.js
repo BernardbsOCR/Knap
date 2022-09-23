@@ -10,7 +10,7 @@ class DialogMSG {
     static FORM_PRODUCT_ADDED_PRODUCTS = "Articles ajoutés au panier :";
 
     static FORM_ORDER_ERROR_REQUIRED = "Champ obligatoire";
-    static FORM_ORDER_ERROR_FIRST_NAME = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 30 caractères maximum";
+    static FORM_ORDER_ERROR_FIRST_NAME = "Caractères autorisés : Lettres et caractères spéciaux ('.', '-', '_'), 30 caractères maximum";
     static FORM_ORDER_ERROR_LAST_NAME = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 30 caractères maximum";
     static FORM_ORDER_ERROR_ADDRESS = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 100 caractères maximum";
     static FORM_ORDER_ERROR_CITY = "Caractères autorisés : Lettres, chiffres et caractères spéciaux ('.', '-', '_'), 50 caractères maximum";

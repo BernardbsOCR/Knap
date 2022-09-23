@@ -1,5 +1,5 @@
 //************************************* */
-Promise.all([
+/*Promise.all([
     loadFile("../js/models/products.js"),
     loadFile("../js/models/contact.js"),
     loadFile("../js/tools/data.js"),
@@ -25,8 +25,10 @@ function loadFile(file) {
 
         document.body.appendChild(scriptEle);
     });
-}
+}*/
 //************************************* */
+
+start();
 
 let form;
 
@@ -243,7 +245,7 @@ async function submitOrder(submitSummary) {
     }
     else {
         showError("", DialogMSG.MSG_ERROR_OCCURED);
-    }
+    }    
 }
 
 function confirmOrder(result) {
