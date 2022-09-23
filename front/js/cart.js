@@ -40,17 +40,21 @@ function updateCartProductsData(productsData) {
 function createCards() {
     if (storage.cartProductsData != undefined && storage.cartProductsData.length > 0) {
         for(let i = 0; i < storage.cartProductsData.length; i++) {
-            let card = CardsView.createCartCard(   
-                        storage.clientCart[i].num, 
-                        storage.cartProductsData[i], 
-                        storage.clientCart[i].quantity, 
-                        storage.clientCart[i].color);
+            let card = createItemCard(i);
 
             addItemCard(card);
         
             addItemCardListener(card);
         }
     }    
+}
+
+function createItemCard(id) {
+    return CardsView.createCartCard(   
+        storage.clientCart[id].num, 
+        storage.cartProductsData[id], 
+        storage.clientCart[id].quantity, 
+        storage.clientCart[id].color);
 }
 
 function addItemCard(card) {
@@ -128,6 +132,7 @@ function onItemCountListener(event) {
 
 function showFormMessage(elementId, title, message) {
     alertDialog.showMessage(title, message); 
+
     document.getElementById(elementId).focus();
 }
 
@@ -135,7 +140,8 @@ function showFormMessage(elementId, title, message) {
 
 function getItemId(event) {
     let id = event.target.id;
-    id = id.substring(id.length - 1);    
+    id = id.substring(id.length - 1);   
+
     return parseInt(id);
 }
 
@@ -151,26 +157,26 @@ function getCardPrice(card) {
 
 function createOrderForm() {
     let formView = document.querySelector("form");
-    let listRegExp = Data.getFormOrderRegExp();
-    let listErrorText = Data.getFormOrderFieldsText(DialogMSG.getFormOrderErrorText());
+    let formOrderFieldsText = Data.getFormOrderFieldsText(DialogMSG.getFormOrderErrorText());
 
-    form = new FormOrderCart(formView, listRegExp, listErrorText);
+    form = new FormOrderCart(formView, formOrderFieldsText);
 
     addOrderFormListener(formView);
 }
 
 function addOrderFormListener(formView) {  
     formView.addEventListener("input", (event) => {    
-        onFieldResponse(event.target);
+        onFieldChange(event.target);
     });
 
     formView.addEventListener("submit", (event) => {   
         event.preventDefault(); 
-        onSubmitResponse(event.target);
+
+        onSubmit();
     });
 }
 
-function onFieldResponse(target) {  
+function onFieldChange(target) {  
     let isValidField = form.checkField(target) ? true : false;
 
     let message = isValidField ? "" : form.getErrorMessage(target.id);
@@ -178,6 +184,7 @@ function onFieldResponse(target) {
     form.setErrorFieldText(target, message);
 }
 
-function onSubmitResponse(target) {       
+function onSubmit() {  
     let contact = form.getClientContactData();
+    let orderSummaryList = storage.getOrderSummaryList();
 }

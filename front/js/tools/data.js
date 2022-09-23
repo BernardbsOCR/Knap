@@ -1,4 +1,4 @@
-class Data{
+class Data {
     static getCurrentURL() {
         return new URL(document.location.href);
     }
@@ -7,28 +7,23 @@ class Data{
         return this.getCurrentURL().searchParams.get(key);     
     }
 
-    static getFormOrderRegExp() {
-        let expName = /^([\w \_\.\-]){1,30}$/;
-        let expAddress = /^([\w \_\.\-]){1,100}$/;
-        let city =  /^([\w \_\.\-]){1,50}$/;
-        let expEmail = /^\w+([\._]?\w)*@\w+([\._]?\w)*\.(\w{2,3})+$/;
-
-        return {
-            "firstName" : expName, 
-            "lastName" : expName,
-            "address" : expAddress,
-            "city" : city,
-            "email" : expEmail
-        };
-    }
-
     static getFormOrderFieldsText(errorText) {
-        let fieldsName = ["firstName", "lastName", "address", "city", "email"];
+        let fieldIds = ["firstName", "lastName", "address", "city", "email"];
+
+        let listRegExp = [
+            /^([\w \_\.\-]){1,30}$/,
+            /^([\w \_\.\-]){1,30}$/,
+            /^([\w \_\.\-]){1,100}$/,
+            /^([\w \_\.\-]){1,50}$/,
+            /^\w+([\._]?\w)*@\w+([\._]?\w)*\.(\w{2,3})+$/
+        ]
 
         let list = [];
-        for(let i = 0; i < fieldsName.length; i++) {
+
+        for(let i = 0; i < fieldIds.length; i++) {
             let field = {};
-            field.name = fieldsName[i];
+            field.id = fieldIds[i];
+            field.regExp = listRegExp[i];
             field.error = errorText[i];
 
             list.push(field);

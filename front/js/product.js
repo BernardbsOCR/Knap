@@ -7,7 +7,7 @@ function start() {
 //************************************* */
 
 function getProductId() {
-    return ULRTools.getHrefPropertyValue("id");
+    return Data.getHrefPropertyValue("id");
 }
 
 async function getProductData() {

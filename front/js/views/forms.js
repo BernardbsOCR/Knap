@@ -1,13 +1,11 @@
 class FormOrderCart {
    
     #mFormView;
-    #mRegExp;
-    #mErrorField;
+    #mTextField;
 
-    constructor(formView, regExp, errorField) {
+    constructor(formView, textField) {
         this.#mFormView = formView;
-        this.#mRegExp = regExp;
-        this.#mErrorField = errorField;
+        this.#mTextField = textField;
     }
 
     //************************************* */
@@ -16,16 +14,8 @@ class FormOrderCart {
         return this.#mFormView;
     }
 
-    get regExp () {
-        return this.#mRegExp;
-    }
-
-    set regExp (regExp) {
-        this.#mRegExp = regExp;
-    }
-
-    get errorField() {
-        return this.#mErrorField;
+    get textField() {
+        return this.#mTextField;
     }
 
     //************************************* */
@@ -40,9 +30,12 @@ class FormOrderCart {
 
     isValidField(target) {
         let value = document.getElementById(target.id).value;
-        let exp = this.regExp[target.id];
 
-        return value.match(exp);
+        let fieldId = this.textField.findIndex((e) => e.id == target.id);
+
+        let regExp = this.textField[fieldId].regExp;
+
+        return value.match(regExp);
     }
 
     setErrorFieldText(target, message) {
@@ -65,8 +58,8 @@ class FormOrderCart {
             email);
     }
 
-    getErrorMessage(fieldName) {
-        let id = this.errorField.findIndex((e) => e.name == fieldName);
-        return this.errorField[id].error;
+    getErrorMessage(fieldId) {
+        let id = this.textField.findIndex((e) => e.id == fieldId);
+        return this.textField[id].error;
     }
 }

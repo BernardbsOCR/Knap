@@ -131,4 +131,23 @@ class Storage {
     #getProductPosition(itemId) {
         return this.clientCart.findIndex((id) => id.num == itemId);
     }
+
+    getOrderSummaryList() {    
+        let productSummary = [];
+    
+        for(let i = 0; i < this.clientCart.length; i++) {
+            let product = {};
+            product.id = this.clientCart[i]._id;
+            let id = this.cartProductsData.findIndex(e => e._id == product.id);        
+            product.name = this.cartProductsData[id].name;
+            product.color = this.clientCart[i].color;
+            product.quantity = this.clientCart[i].quantity;
+            product.price = this.cartProductsData[id].price;
+            product.total = parseInt(product.quantity) * parseInt(product.price);
+    
+            productSummary.push(product);
+        }
+
+        return productSummary;
+    }
 }
