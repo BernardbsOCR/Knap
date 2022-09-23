@@ -1,4 +1,10 @@
 class Data {
+    static #mrootUrl = "http://localhost:3000/api/products/";
+
+    static get rootUrl() {
+        return this.#mrootUrl;
+    }
+
     static getCurrentURL() {
         return new URL(document.location.href);
     }
@@ -12,7 +18,7 @@ class Data {
 
         let listRegExp = [
             /^([\w \_\.\-]){1,30}$/,
-            /^([\w \_\.\-]){1,30}$/,
+            /^([a-zA-Z \_\.\-]){1,30}$/,
             /^([\w \_\.\-]){1,100}$/,
             /^([\w \_\.\-]){1,50}$/,
             /^\w+([\._]?\w)*@\w+([\._]?\w)*\.(\w{2,3})+$/

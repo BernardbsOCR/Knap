@@ -19,7 +19,7 @@ function startPage() {
 //************************************* */
 
 function createKanapAPI() {
-    kanapAPi = new KanapAPI(storage.rootUrl);
+    kanapAPi = new KanapAPI(Data.rootUrl);
 }
 
 function createStorage() {

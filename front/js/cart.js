@@ -1,6 +1,34 @@
-let form;
+//************************************* */
+Promise.all([
+    loadFile("../js/models/products.js"),
+    loadFile("../js/models/contact.js"),
+    loadFile("../js/tools/data.js"),
+    loadFile("../js/text/dialog_fr.js"),
+    loadFile("../js/api/kanapApi.js"),
+    loadFile("../js/views/forms.js"),
+    loadFile("../js/views/alertDialogView.js"),
+    loadFile("../js/views/productCounterView.js"),
+    loadFile("../js/views/cardsView.js"),
+    loadFile("../js/tools/storage.js"),
+    loadFile("../js/basePage.js")
+])
+.then(() => {
+    start();
+});
 
-start();
+function loadFile(file) {
+    return new Promise(response => {
+        let scriptEle = document.createElement("script");
+        scriptEle.setAttribute("src", file);
+        scriptEle.onload = () => {response([{"ok": true, "status": 200, "statusText": "File Loaded"}]);}
+        scriptEle.onerror = (e) => {response([{"ok": false, "status": 400, "statusText": "File not found"}]);}
+
+        document.body.appendChild(scriptEle);
+    });
+}
+//************************************* */
+
+let form;
 
 function start() {
     checkFormUIVisibility(storage.clientCart.length);    
@@ -18,6 +46,9 @@ async function getListProductsData() {
     }
     else if(result.length > 0 && result[0]._id != undefined) {
         setupUI(result);
+    }
+    else {
+        showError("", DialogMSG.MSG_ERROR_OCCURED);
     }
 }
 
@@ -186,5 +217,40 @@ function onFieldChange(target) {
 
 function onSubmit() {  
     let contact = form.getClientContactData();
-    let orderSummaryList = storage.getOrderSummaryList();
+    let products = storage.cartProductsData;
+
+    let submitSummary = {};
+    submitSummary.contact = contact;
+    submitSummary.products = products;
+
+    console.log("submitSummary before");
+    console.log(submitSummary);
+
+    submitOrder(submitSummary);   
 }
+
+async function submitOrder(submitSummary) {
+    let result = await kanapAPi.submitOrder(submitSummary);
+
+    console.log("response submitOrder");
+    console.log(result);
+
+    if(result.length > 0 && result[0].errorType != undefined) {
+        showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
+    }
+    else if(result.length > 0 && result[0]._id != undefined) {
+        confirmOrder(result);
+    }
+    else {
+        showError("", DialogMSG.MSG_ERROR_OCCURED);
+    }
+}
+
+function confirmOrder(result) {
+    console.log("response submitOrder");
+    console.log(result.orderId);
+
+    
+}
+
+

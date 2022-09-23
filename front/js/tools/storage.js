@@ -4,8 +4,6 @@ class Storage {
     #mCurrentProductData;
     #mCurrentCartProduct;
 
-    #mrootUrl = "http://localhost:3000/api/products/";
-
     constructor() {
         this.#mClientCart = localStorage.userCartShop != null ? JSON.parse(localStorage.userCartShop) : [];
         this.#mCartProductsData = [];
@@ -40,10 +38,6 @@ class Storage {
     
     set currentCartProduct(product) {
         this.#mCurrentCartProduct = product;
-    }
-
-    get rootUrl() {
-        return this.#mrootUrl;
     }
 
     get productsCount() {
