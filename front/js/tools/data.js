@@ -1,8 +1,13 @@
 class Data {
-    static #mrootUrl = "http://localhost:3000/api/products/";
+    static #mRootApiUrl = "http://localhost:3000/api/products/";
+    static #mOrderLink = "../html/confirmation.html?orderId=";
 
-    static get rootUrl() {
-        return this.#mrootUrl;
+    static get rootApiUrl() {
+        return this.#mRootApiUrl;
+    }
+
+    static get orderLink() {
+        return this.#mOrderLink;
     }
 
     static getCurrentURL() {

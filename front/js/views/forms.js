@@ -49,14 +49,16 @@ class FormOrderCart {
         let lastName = document.getElementById("lastName").value;
         let address = document.getElementById("address").value;
         let city = document.getElementById("city").value;
-        let email = document.getElementById("email").value;           
-            
-        return new Contact(firstName, 
-            lastName,
-            address,
-            city,
-            email);
-    }
+        let email = document.getElementById("email").value; 
+        
+        return {
+            "firstName": firstName,
+            "lastName": lastName,
+            "address": address,
+            "city": city,
+            "email": email,
+        };
+    }            
 
     getErrorMessage(fieldId) {
         let id = this.textField.findIndex((e) => e.id == fieldId);

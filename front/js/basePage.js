@@ -1,64 +1,71 @@
-let alertDialog;
-let counter;
-let navigationMenu;
-let storage;
-let kanapAPi;
+class KanapBasePage {
+    #mAlertDialog;
+    #mCounter;
+    #mNavigationMenu;
+    #mStorage;
+    #mKanapAPI;
 
-startPage();
-
-function startPage() {
-    createStorage();
-
-    createKanapAPI();
-
-    createCounter();
-    
-    createAlertDialog();
-}
-
-//************************************* */
-
-function createKanapAPI() {
-    kanapAPi = new KanapAPI(Data.rootUrl);
-}
-
-function createStorage() {
-    storage = new Storage();
-}
-
-function createAlertDialog() {
-    alertDialog = new AlertDialog("body", "35rem", 3500);
-}
-
-function createCounter() {
-    counter = ArticleCounter.getCounter("counter");
-
-    navigationMenu = document.querySelector("nav");
-    navigationMenu.style.alignItems = "center";
-
-    updateMenuCounterUI();  
-}
-
-function updateMenuCounterUI() {
-    let count = storage.productsCount;
-    counter.innerText = count;   
-
-    if(count > 0 ) {           
-        if(document.getElementById("counter") == undefined) {
-            navigationMenu.appendChild(counter);
-        }        
+    get alertDialog() {
+        return this.#mAlertDialog;
     }
-    else {
-        if(document.getElementById("counter") != undefined) {
-            navigationMenu.removeChild(counter);
-        }  
-    }
-}
 
-function showError(errorType, message) {
-    alertDialog.showErrorCode("404", message);
+    get counter() {
+        return this.#mCounter;
+    }
+
+    get navigationMenu() {
+        return this.#mNavigationMenu;
+    }
+
+    get storage() {
+        return this.#mStorage;
+    }
+
+    get kanapAPI() {
+        return this.#mKanapAPI;
+    }
     
-    console.log("********basePage => showError");
-    console.log(errorType);
-    console.log("********basePage => showError");
+    constructor(rootApiUrl) {
+        this.#setup(rootApiUrl);
+
+        this.updateMenuCounterUI();
+    }
+    
+    #setup(rootApiUrl) {
+        this.#mStorage = new Storage();
+    
+        this.#mKanapAPI = new KanapAPI(rootApiUrl);        
+        
+        this.#mAlertDialog = new AlertDialog("body", "35rem", 3500);
+
+        this.#mCounter = CartCounter.getCounter("counter");
+    
+        this.#mNavigationMenu = document.querySelector("nav");
+        this.#mNavigationMenu.style.alignItems = "center";
+    }
+        
+    updateMenuCounterUI() {
+        let count = this.storage.productsCount;
+        this.counter.innerText = count;   
+    
+        if(count > 0 ) {           
+            if(document.getElementById("counter") == undefined) {
+                this.navigationMenu.appendChild(this.counter);
+            }        
+        }
+        else {
+            if(document.getElementById("counter") != undefined) {
+                this.navigationMenu.removeChild(this.counter);
+            }  
+        }
+    }
+
+    showError(status, message) {
+        if(basePage != undefined) {
+            basePage.alertDialog.showErrorCode("404", message);
+        }
+        
+        console.log("********showError********");
+        console.log(status);
+    }
 }

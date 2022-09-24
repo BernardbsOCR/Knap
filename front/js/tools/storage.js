@@ -5,7 +5,10 @@ class Storage {
     #mCurrentCartProduct;
 
     constructor() {
-        this.#mClientCart = localStorage.userCartShop != null ? JSON.parse(localStorage.userCartShop) : [];
+        console.log("localStorage.userCartShop");
+        console.log(localStorage.userCartShop);
+
+        this.#mClientCart = localStorage.userCartShop != undefined && localStorage.userCartShop != []? JSON.parse(localStorage.userCartShop) : [];
         this.#mCartProductsData = [];
         this.#mCurrentProductData = {};
     }
@@ -14,6 +17,10 @@ class Storage {
 
     get clientCart() {
         return this.#mClientCart;
+    }
+
+    set clientCart(value) {
+        this.#mClientCart = value;
     }
 
     get cartProductsData() {
@@ -42,6 +49,7 @@ class Storage {
 
     get productsCount() {
         let total = 0;
+
         if (this.clientCart.length > 0) {
             for (let product of this.clientCart) {
                 total += parseInt(product.quantity);
@@ -143,5 +151,14 @@ class Storage {
         }
 
         return productSummary;
+    }
+
+    clearClientCart() {
+        this.#mClientCart = [];
+        this.#mCartProductsData = [];
+        this.#mCurrentProductData = [];
+        this.#mCurrentCartProduct = [];
+
+        localStorage.userCartShop = [];
     }
 }

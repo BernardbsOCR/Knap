@@ -1,7 +1,7 @@
-class ArticleCounter {
+class CartCounter {
     
     static getCounter(id) {
-        counter = document.createElement("p");
+        let counter = document.createElement("p");
         counter.id = id;
         counter.style.width = "fit-content";
         counter.style.minWidth = ".9rem";
@@ -16,6 +16,6 @@ class ArticleCounter {
         counter.style.textAlign = "center";
         counter.style.border = "2px solid var(--main-color)";
     
-        return counter
+        return counter;
     }
 }

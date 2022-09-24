@@ -14,86 +14,78 @@ class KanapAPI {
     //************************************* */
 
     getListProducts() {
-        return new Promise(result => {
+        console.log("getListProducts");
+        return new Promise(response => {
             fetch (this.rootUrl)
-                .then (data => {
-                    if(data.ok){
-                        return data.json();
+                .then (result => {
+                    if(result.ok){
+                        return result.json();
                     }
                     else{
-                        result([{"ok": data.ok, "status": data.status, "statusText": data.statusText}]);
+                        response(result);
                     }   
                 })
-                .then (jsonListProduct => {
-                    if (jsonListProduct != undefined && jsonListProduct.length > 0) {
-                        result(jsonListProduct);
-                    }
-                    else {
-                        result([{"ok": false, "status": 200, "statusText": "JSON Problem", "errorType": "JSON Problem"}]);
-                    }
-                    
+                .then (data => {
+                    response({"ok": true, "status": 200, "statusText": "success", "result": data});                    
                 })
                 .catch((error) => {
-                    result([{"ok": false, "status": 200, "statusText": error, "errorType": error}]);
+                    response({"ok": false, "status": 400, "statusText": error, "result": {}});
                 });
         });
     }
 
-    getListProductsData(listData, key) {   
-        return new Promise(result => {
-            if (listData.length > 0) {   
+    getListProductsData(listItems, key) {   
+        return new Promise(response => {
+            if (listItems.length > 0) {   
                 let count = 0;     
-                let productsData = []; 
-                let urlProduct = "";
+                let data = []; 
         
-                for (let product of listData) {  
-                    urlProduct = this.rootUrl + product[key];
+                for (let item of listItems) {  
+                    let url = this.rootUrl + item[key];
         
-                    fetch(urlProduct)
-                    .then(data => {
-                        if(data.ok){
-                            return data.json();
+                    fetch(url)
+                    .then(result => {
+
+
+                        if(result.ok){
+                            return result.json();
                         }
                         else{
-                            result([{"ok": data.ok, "status": data.status, "statusText": data.statusText, "errorType": "JSON Problem"}]);
+                            response(result);
                         }   
                     })
-                    .then(jsonProduct => {     
-                        let productData = new ProductData(jsonProduct);
-
-                        if (productData[key] != undefined) {
-                            productsData.push(new ProductData(jsonProduct));
-                        }
+                    .then(json => {   
+                        data.push(new ProductData(json));
 
                         count ++;
 
-                        if(count == listData.length) {                
-                            result(productsData);
+                        if(count == listItems.length) { 
+                            response({"ok": true, "status": 200, "statusText": "success", "result": data});   
                         }
                     })
                     .catch((error) => {
-                        result([{"ok": false, "status": 200, "statusText": error, "errorType": error}]);
+                        response({"ok": false, "status": 200, "statusText": error, "result": {}});
                     });            
                 }        
             }
             else {
-                result([]);
+                response({"ok": true, "status": 200, "statusText": "success", "result": []});   
             }        
             
         });
     }
 
-    isValidResult(result) {
-        if(result.length > 0 && result[0].errorType != undefined) {
+    isValidResult(response) {
+        if(response.length > 0 && response[0].errorType != undefined) {
             return false;
         }
-        else if(result != undefined && result.length > 0 && result[0]._id != undefined) {
+        else if(response != undefined && response.length > 0 && response[0]._id != undefined) {
             return true;
         }
     }
 
     submitOrder(summary) {
-        return new Promise(result => {            
+        return new Promise(response => {            
             fetch(this.rootUrl+"order",
                 {
                     method: "POST",
@@ -103,22 +95,22 @@ class KanapAPI {
                     body: JSON.stringify(summary)
                 })
             .then(
-                data => {            
-                    if(data.ok){
-                        return data.json();
+                result => {            
+                    if(result.ok){
+                        return result.json();
                     }
                     else{
-                        result([{"ok": data.ok, "status": data.status, "statusText": data.statusText, "errorType": "JSON Problem"}]);
+                        response({"ok": result.ok, "status": result.status, "statusText": result.statusText});
                     }                    
                 }
             )
             .then(
-                jsonData => {
-                    result(jsonData);
+                json => {
+                    response({"ok": true, "status": 200, "statusText": "success", "result": json}); 
                 }
             )
             .catch((error) => {
-                result([{"ok": false, "status": 200, "statusText": error, "errorType": error}]);
+                response({"ok": false, "status": 200, "statusText": error, "result": {}});
             });   
             
         })

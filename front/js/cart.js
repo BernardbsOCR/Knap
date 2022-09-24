@@ -1,20 +1,4 @@
 //************************************* */
-/*Promise.all([
-    loadFile("../js/models/products.js"),
-    loadFile("../js/models/contact.js"),
-    loadFile("../js/tools/data.js"),
-    loadFile("../js/text/dialog_fr.js"),
-    loadFile("../js/api/kanapApi.js"),
-    loadFile("../js/views/forms.js"),
-    loadFile("../js/views/alertDialogView.js"),
-    loadFile("../js/views/productCounterView.js"),
-    loadFile("../js/views/cardsView.js"),
-    loadFile("../js/tools/storage.js"),
-    loadFile("../js/basePage.js")
-])
-.then(() => {
-    start();
-});
 
 function loadFile(file) {
     return new Promise(response => {
@@ -25,32 +9,56 @@ function loadFile(file) {
 
         document.body.appendChild(scriptEle);
     });
-}*/
+}
+
+Promise.all([
+    loadFile("../js/models/products.js"),
+    loadFile("../js/models/contact.js"),
+    loadFile("../js/tools/data.js"),
+    loadFile("../js/text/dialog_fr.js"),
+    loadFile("../js/api/kanapApi.js"),
+    loadFile("../js/views/forms.js"),
+    loadFile("../js/views/alertDialogView.js"),
+    loadFile("../js/views/CounterView.js"),
+    loadFile("../js/views/cardsView.js"),
+    loadFile("../js/tools/storage.js"),
+    loadFile("../js/basePage.js")
+])
+.then(() => {
+    start();
+})
+.catch((error) => {
+    console.log("********loadFile********");
+    console.log(error);
+});
+
 //************************************* */
 
-start();
-
+let basePage;
 let form;
 
 function start() {
-    checkFormUIVisibility(storage.clientCart.length);    
+    initPage();
+    
+    checkFormUIVisibility(basePage.storage.clientCart.length);    
 
     getListProductsData();
+}
+
+function initPage() {
+    basePage = new KanapBasePage(Data.rootApiUrl);
 }
 
 //************************************* */
 
 async function getListProductsData() {
-    let result = await kanapAPi.getListProductsData(storage.clientCart, "_id");
+    let result = await basePage.kanapAPI.getListProductsData(basePage.storage.clientCart, "_id");
 
-    if(result.length > 0 && result[0].errorType != undefined) {
-        showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
-    }
-    else if(result.length > 0 && result[0]._id != undefined) {
-        setupUI(result);
+    if(result.ok) {
+        setupUI(result.result);
     }
     else {
-        showError("", DialogMSG.MSG_ERROR_OCCURED);
+        basePage.showError(result.status, DialogMSG.MSG_ERROR_OCCURED);
     }
 }
 
@@ -67,12 +75,12 @@ function setupUI(productsData) {
 }
 
 function updateCartProductsData(productsData) {    
-    storage.cartProductsData = productsData;
+    basePage.storage.cartProductsData = productsData;
 }
 
 function createCards() {
-    if (storage.cartProductsData != undefined && storage.cartProductsData.length > 0) {
-        for(let i = 0; i < storage.cartProductsData.length; i++) {
+    if (basePage.storage.cartProductsData != undefined && basePage.storage.cartProductsData.length > 0) {
+        for(let i = 0; i < basePage.storage.cartProductsData.length; i++) {
             let card = createItemCard(i);
 
             addItemCard(card);
@@ -84,10 +92,10 @@ function createCards() {
 
 function createItemCard(id) {
     return CardsView.createCartCard(   
-        storage.clientCart[id].num, 
-        storage.cartProductsData[id], 
-        storage.clientCart[id].quantity, 
-        storage.clientCart[id].color);
+        basePage.storage.clientCart[id].num, 
+        basePage.storage.cartProductsData[id], 
+        basePage.storage.clientCart[id].quantity, 
+        basePage.storage.clientCart[id].color);
 }
 
 function addItemCard(card) {
@@ -102,10 +110,10 @@ function addItemCardListener(card) {
 //************************************* */
 
 function updateUI() {
-    document.getElementById("totalQuantity").innerText = storage.productsCount;
-    document.getElementById("totalPrice").innerText = storage.totalPrice;
+    document.getElementById("totalQuantity").innerText = basePage.storage.productsCount;
+    document.getElementById("totalPrice").innerText = basePage.storage.totalPrice;
 
-    updateMenuCounterUI();
+    basePage.updateMenuCounterUI();
 }
 
 function checkFormUIVisibility(count) {
@@ -128,11 +136,13 @@ function checkFormUIVisibility(count) {
 //************************************* */
 
 function onItemDeleteListener(event) {
-    removeItem(getItemId(event), event);   
+    let itemId = getItemId(event);
+
+    removeItem(itemId, event);   
     
     updateUI();
 
-    checkFormUIVisibility(storage.productsCount);
+    checkFormUIVisibility(basePage.storage.productsCount);
 }
 
 function removeItem(itemId, event) {
@@ -152,7 +162,7 @@ function onItemCountListener(event) {
     let quantity = event.target.value;
 
     if (quantity >= 1 && quantity <= 100) {
-        storage.updateProductQuantity(itemId, quantity);
+        basePage.storage.updateProductQuantity(itemId, quantity);
 
         updateUI();
     }
@@ -161,12 +171,6 @@ function onItemCountListener(event) {
             DialogMSG.FORM_PRODUCT_TITLE_INVALID_QUANTITY, 
             DialogMSG.FORM_PRODUCT_ALERT_QUANTITY);
     }
-}
-
-function showFormMessage(elementId, title, message) {
-    alertDialog.showMessage(title, message); 
-
-    document.getElementById(elementId).focus();
 }
 
 //************************************* */
@@ -217,42 +221,50 @@ function onFieldChange(target) {
     form.setErrorFieldText(target, message);
 }
 
-function onSubmit() {  
-    let contact = form.getClientContactData();
-    let products = storage.cartProductsData;
+//************************************* */
+
+function onSubmit() {
+    let products = basePage.storage.cartProductsData;
+    let listIds = [];
+
+    for(let product of products) {
+        listIds.push(product._id);
+    }
 
     let submitSummary = {};
-    submitSummary.contact = contact;
-    submitSummary.products = products;
+    submitSummary.contact = form.getClientContactData();
+    submitSummary.products = listIds;
 
-    console.log("submitSummary before");
+    console.log("submitSummary new");
     console.log(submitSummary);
 
     submitOrder(submitSummary);   
 }
 
 async function submitOrder(submitSummary) {
-    let result = await kanapAPi.submitOrder(submitSummary);
+    let result = await basePage.kanapAPI.submitOrder(submitSummary);
 
     console.log("response submitOrder");
     console.log(result);
 
-    if(result.length > 0 && result[0].errorType != undefined) {
-        showError(result[0].errorType, DialogMSG.MSG_ERROR_OCCURED);
-    }
-    else if(result.length > 0 && result[0]._id != undefined) {
-        confirmOrder(result);
+    if (result.ok) {
+        confirmOrder(result.result);
     }
     else {
-        showError("", DialogMSG.MSG_ERROR_OCCURED);
+        basePage.showError(result.status, DialogMSG.MSG_ERROR_OCCURED);
     }    
 }
 
-function confirmOrder(result) {
-    console.log("response submitOrder");
-    console.log(result.orderId);
-
+function confirmOrder(result) {  
+    basePage.storage.clearClientCart();
     
+    document.location.href = "../html/confirmation.html?orderId=" + result.orderId;
 }
 
+//************************************* */
 
+function showFormMessage(elementId, title, message) {
+    basePage.alertDialog.showMessage(title, message); 
+
+    document.getElementById(elementId).focus();
+}
