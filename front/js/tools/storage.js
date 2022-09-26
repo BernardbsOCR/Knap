@@ -1,13 +1,28 @@
+/**
+ * Class Storage
+ * 
+ * Integrates all user save data
+ * - the shopping cart
+ * - Cart product data
+ * - Current product data
+ * - Current cart product
+ */
+
 class Storage {
+    /** @private @type{Array.<ProductData>} mClientCart */
     #mClientCart;
+    /** @private @type{Array.<ProductCardCart>} mClientCart */
     #mCartProductsData;
+    /** @private @type{ProductData} mClientCart */
     #mCurrentProductData;
+    /** @private @type{Array.<ProductCardCart>} mClientCart */
     #mCurrentCartProduct;
 
+    /**
+     * @constructor Initializing Storage instance
+     */
     constructor() {
-        console.log("localStorage.userCartShop");
-        console.log(localStorage.userCartShop);
-
+        // Check localStorage.userCartShop variable is define
         this.#mClientCart = localStorage.userCartShop != undefined && localStorage.userCartShop != []? JSON.parse(localStorage.userCartShop) : [];
         this.#mCartProductsData = [];
         this.#mCurrentProductData = {};
@@ -47,6 +62,10 @@ class Storage {
         this.#mCurrentCartProduct = product;
     }
 
+    /**
+     * Get clientCart number of products 
+     * @returns 
+     */
     get productsCount() {
         let total = 0;
 
@@ -59,6 +78,10 @@ class Storage {
         return total;
     }
 
+    /**
+     * Get total price for all products in clientCart
+     * @returns 
+     */
     get totalPrice() {
         let totalPrice = 0;
 
@@ -73,6 +96,13 @@ class Storage {
 
     //************************************* */
     
+    /**
+     * Add Current Product in clientCart
+     * 
+     * @param {String} productId 
+     * @param {String} color 
+     * @param {Integer} quantity 
+     */
     addCurrentProduct(productId, color, quantity) {
         let card = new ProductCardCart(
                     this.clientCart.length,
@@ -94,6 +124,11 @@ class Storage {
         this.#storeData();  
     }
     
+    /**
+     * Check if product presnet in clientCart
+     * 
+     * @returns 
+     */
     #isAlreadyAdded() {
         if (this.clientCart.length > 0) {
             let count = 0;
@@ -108,10 +143,18 @@ class Storage {
         return -1;
     }
     
+    /**
+     * Save clientCart in localStorage.userCartShop
+     */
     #storeData() {
         localStorage.userCartShop = JSON.stringify(this.clientCart);
     }
     
+    /**
+     * Remove product of clientCart & cartProductsData lists
+     * 
+     * @param {String} productId 
+     */
     removeProduct(productId) {   
         let id = this.#getProductPosition(productId);
 
@@ -122,6 +165,12 @@ class Storage {
         this.#storeData();
     }
 
+    /**
+     * Update clientCart product quantity
+     * 
+     * @param {String} itemId 
+     * @param {Integer} quantity 
+     */
     updateProductQuantity(itemId, quantity) {
         let id = this.#getProductPosition(itemId);
 
@@ -130,10 +179,20 @@ class Storage {
         this.#storeData();
     }
 
+    /**
+     * Get product data in clientCart
+     * 
+     * @param {String} itemId 
+     * @returns 
+     */
     #getProductPosition(itemId) {
         return this.clientCart.findIndex((id) => id.num == itemId);
     }
 
+    /**
+     * get order summary list
+     * @returns 
+     */
     getOrderSummaryList() {    
         let productSummary = [];
     
@@ -153,6 +212,9 @@ class Storage {
         return productSummary;
     }
 
+    /**
+     * clear all data & localStorage.userCartShop
+     */
     clearClientCart() {
         this.#mClientCart = [];
         this.#mCartProductsData = [];

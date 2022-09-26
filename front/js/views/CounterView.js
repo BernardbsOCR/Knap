@@ -1,5 +1,17 @@
+/**
+ * Class CartCounter
+ * 
+ * Create cart product count object
+ */
+
 class CartCounter {
     
+    /**
+     * Create cart product count object
+     * 
+     * @param {String} id 
+     * @returns 
+     */
     static getCounter(id) {
         let counter = document.createElement("p");
         counter.id = id;

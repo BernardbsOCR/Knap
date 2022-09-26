@@ -1,5 +1,11 @@
 //************************************* */
 
+/**
+ * Create a promise to add a "script" element in the document body
+ * 
+ * @param {String} file Source of the file to load
+ * @returns {Promise} The Promise's response
+ */
 function loadFile(file) {
     return new Promise(response => {
         let scriptEle = document.createElement("script");
@@ -11,6 +17,9 @@ function loadFile(file) {
     });
 }
 
+/**
+ * Chain of Promise {addJSScript}
+ */
 Promise.all([
     loadFile("../js/tools/data.js")
 ])
@@ -22,9 +31,18 @@ Promise.all([
     console.log(error);
 });
 
+/**
+ * Start JS code
+ */
 function start() {
+    updateUI();
+}
+
+/**
+ * Update user interface
+ */
+function updateUI() {
     let orderId = Data.getHrefPropertyValue("orderId");
 
     document.getElementById('orderId').innerText = orderId;
 }
-
