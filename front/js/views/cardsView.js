@@ -1,4 +1,17 @@
+/**
+ * Class CardsView
+ * 
+ * Create cart product count object
+ */
+
 class CardsView {
+
+    /**
+     * Create product object for index.html page
+     * 
+     * @param {Object} product 
+     * @returns 
+     */
     static createIndexCard(product) {
         //------------Index card
         let card = document.createElement("a");
@@ -31,6 +44,15 @@ class CardsView {
         return card;
     }
     
+    /**
+     * Create product object for cart.html page
+     * 
+     * @param {Integer} num 
+     * @param {Object} product 
+     * @param {Integer} quantity 
+     * @param {String} color 
+     * @returns 
+     */
     static createCartCard(num, product, quantity, color) {
         //------------Product cart
         let card = document.createElement("article");
@@ -121,6 +143,13 @@ class CardsView {
         return card;
     }
 
+    /**
+     * Create Image object for product Object
+     * 
+     * @param {String} src 
+     * @param {String} alt 
+     * @returns 
+     */
     static createProductImage(src, alt) {
         let image = document.createElement("img");
         image.setAttribute("src", src);
@@ -129,6 +158,12 @@ class CardsView {
         return image;
     }
 
+    /**
+     * Create Option object for color of product
+     * 
+     * @param {String} color 
+     * @returns 
+     */
     static createProductColorOption(color) {
         let option = document.createElement("option");
         option.setAttribute("value", color);

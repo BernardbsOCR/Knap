@@ -1,10 +1,29 @@
+/**
+* Class Contact
+* - Object contain all client data
+*/
+
 class Contact {
+    /**@type{String} firstName*/
     firstName;
+    /**@type{String} lastName*/
     lastName;
+    /**@type{String} address*/
     address;
+    /**@type{String} city*/
     city;
+    /**@type{String} email*/
     email;
 
+    /**
+     * @constructor Initializing Contact instance
+     * 
+     * @param {String} firstName 
+     * @param {String} lastName 
+     * @param {String} address 
+     * @param {String} city 
+     * @param {String} email 
+     */
     constructor(firstName, lastName, address, city, email) {
         this.firstName = firstName;
         this.lastName = lastName;

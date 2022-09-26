@@ -1,3 +1,9 @@
+/**
+ * Class DialogMSG
+ * 
+ * - Allows you to obtain all the text variables in French necessary for the creation of Kanap pages
+ */
+
 class DialogMSG {
     static MSG_ERROR_OCCURED = "Oops! Une erreur est survenue";
     static MSG_ERROR_NOT_FOUND = "Référence introuvable!";
@@ -24,7 +30,11 @@ class DialogMSG {
     static FORM_SUMMARY_TITLE_PRICE_UNITY = "prix à l'unité";
     static FORM_SUMMARY_TITLE_AMOUNT = "Montant TTC";
     
-    
+    /**
+     * Get form order error text
+     * 
+     * @returns 
+     */
     static getFormOrderErrorText() {
         let errors = [this.FORM_ORDER_ERROR_FIRST_NAME, 
             this.FORM_ORDER_ERROR_LAST_NAME,
@@ -34,6 +44,11 @@ class DialogMSG {
         return errors;
     }
 
+    /**
+     * Get form summary text
+     * 
+     * @returns 
+     */
     static getFormSummaryText() {
         let summary = [this.FORM_SUMMARY_TITLE_NAME,
             this.FORM_SUMMARY_TITLE_ID,
@@ -43,6 +58,13 @@ class DialogMSG {
         return summary;
     }
 
+    /**
+     * get purchase message
+     * 
+     * @param {ProductCardCart} currentCartProduct 
+     * @param {ProductData} currentProductData 
+     * @returns 
+     */
     static getPurchaseMessage(currentCartProduct, currentProductData) {
         let message = "- <b>Nom du produit :</b>  " + currentProductData.name;
         message += "<br/><br/>- <b>Couleur :</b>  " + currentCartProduct.color;
@@ -52,6 +74,12 @@ class DialogMSG {
         return message;
     }
 
+    /**
+     * get purchase message Title
+     * 
+     * @param {ProductCardCart} currentCartProduct 
+     * @returns 
+     */
     static getPurchaseTitle(currentCartProduct) {
         return currentCartProduct.quantity > 1 ? this.FORM_PRODUCT_ADDED_PRODUCTS : this.FORM_PRODUCT_ADDED_PRODUCT;
     }

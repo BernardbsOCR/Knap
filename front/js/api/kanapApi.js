@@ -1,6 +1,17 @@
+/**
+ * Class KanapAPI
+ * - Allows communication with the Kanap server
+ */
+
 class KanapAPI {
+    /** @private @type{String} */
     #mRootUrl;
     
+    /**
+     * @constructor Initializing KanapAPI
+     * 
+     * @param {String} url 
+     */
     constructor(url) {
         this.#mRootUrl = url;
     }
@@ -12,9 +23,12 @@ class KanapAPI {
     }
 
     //************************************* */
-
+    /**
+     * Get Array of products (ProductData)
+     * 
+     * @returns 
+     */
     getListProducts() {
-        console.log("getListProducts");
         return new Promise(response => {
             fetch (this.rootUrl)
                 .then (result => {
@@ -34,6 +48,11 @@ class KanapAPI {
         });
     }
 
+    /**
+     * Get Array of cart products (ProductCardCart)
+     * 
+     * @returns 
+     */
     getListProductsData(listItems, key) {   
         return new Promise(response => {
             if (listItems.length > 0) {   
@@ -45,8 +64,6 @@ class KanapAPI {
         
                     fetch(url)
                     .then(result => {
-
-
                         if(result.ok){
                             return result.json();
                         }
@@ -75,15 +92,12 @@ class KanapAPI {
         });
     }
 
-    isValidResult(response) {
-        if(response.length > 0 && response[0].errorType != undefined) {
-            return false;
-        }
-        else if(response != undefined && response.length > 0 && response[0]._id != undefined) {
-            return true;
-        }
-    }
-
+    /**
+     * submit order cart 
+     * 
+     * @param {Object} summary 
+     * @returns 
+     */
     submitOrder(summary) {
         return new Promise(response => {            
             fetch(this.rootUrl+"order",

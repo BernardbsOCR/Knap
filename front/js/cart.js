@@ -1,5 +1,11 @@
 //************************************* */
 
+/**
+ * Create a promise to add a "script" element in the document body
+ * 
+ * @param {String} file Source of the file to load
+ * @returns {Promise} The Promise's response
+ */
 function loadFile(file) {
     return new Promise(response => {
         let scriptEle = document.createElement("script");
@@ -11,6 +17,9 @@ function loadFile(file) {
     });
 }
 
+/**
+ * Chain of Promise {addJSScript}
+ */
 Promise.all([
     loadFile("../js/models/products.js"),
     loadFile("../js/models/contact.js"),
@@ -34,50 +43,88 @@ Promise.all([
 
 //************************************* */
 
+//** @type {BasePage} */
 let basePage;
+//** @type {FormOrderCart} */
 let form;
 
+/**
+ * Start JS code
+ */
 function start() {
     initPage();
     
-    checkFormUIVisibility(basePage.storage.clientCart.length);    
+    checkClientFormVisibility(basePage.storage.clientCart.length);    
 
     getListProductsData();
 }
 
+/**
+ * Create instance of {basePage}
+ */
 function initPage() {
     basePage = new KanapBasePage(Data.rootApiUrl);
 }
 
 //************************************* */
 
+/**
+ * Create products data list and update UI
+ * @async
+ */
 async function getListProductsData() {
+    // Start Promise to get list of products data
     let result = await basePage.kanapAPI.getListProductsData(basePage.storage.clientCart, "_id");
 
+    // Check Promise response
     if(result.ok) {
-        setupUI(result.result);
+        saveCartProductsData(result.result);
+
+        setupUI();
     }
     else {
+        // Display the error message on the user interface
         basePage.showError(result.status, DialogMSG.MSG_ERROR_OCCURED);
     }
 }
 
 //************************************* */
 
-function setupUI(productsData) {
-    updateCartProductsData(productsData);
-
+/**
+ * Update user interface
+ * 
+ * @param {array.<ProductData>} product 
+ */
+function setupUI() {
     createCards();
 
-    updateUI();
+    initOrderForm();
 
-    createOrderForm();
+    updateUI();
 }
 
-function updateCartProductsData(productsData) {    
+/**
+ * Update User interface
+ */
+function updateUI() {
+    document.getElementById("totalQuantity").innerText = basePage.storage.productsCount;
+    document.getElementById("totalPrice").innerText = basePage.storage.totalPrice;
+
+    basePage.updateCartCounterProduct();
+}
+
+/**
+ * Save list of products data on {storage} instance
+ * 
+ * @param {array.<ProductData>} productsData 
+ */
+function saveCartProductsData(productsData) {    
     basePage.storage.cartProductsData = productsData;
 }
 
+/**
+ * Create card elements items "article" for UI
+ */
 function createCards() {
     if (basePage.storage.cartProductsData != undefined && basePage.storage.cartProductsData.length > 0) {
         for(let i = 0; i < basePage.storage.cartProductsData.length; i++) {
@@ -90,6 +137,11 @@ function createCards() {
     }    
 }
 
+/**
+ * Create new cart card "article" Object
+ * @param {String} id 
+ * @returns {Object}
+ */
 function createItemCard(id) {
     return CardsView.createCartCard(   
         basePage.storage.clientCart[id].num, 
@@ -98,10 +150,18 @@ function createItemCard(id) {
         basePage.storage.clientCart[id].color);
 }
 
+/**
+ * Add card element Object on UI
+ * @param {Object} card 
+ */
 function addItemCard(card) {
     document.getElementById("cart__items").appendChild(card);
 }
 
+/**
+ * Add card Object listener
+ * @param {Object} card 
+ */
 function addItemCardListener(card) {
     card.querySelector(".deleteItem").addEventListener('click', onItemDeleteListener);
     card.querySelector("input").addEventListener('change', onItemCountListener);
@@ -109,14 +169,12 @@ function addItemCardListener(card) {
 
 //************************************* */
 
-function updateUI() {
-    document.getElementById("totalQuantity").innerText = basePage.storage.productsCount;
-    document.getElementById("totalPrice").innerText = basePage.storage.totalPrice;
-
-    basePage.updateMenuCounterUI();
-}
-
-function checkFormUIVisibility(count) {
+/**
+ * Check customer form visibility
+ * 
+ * @param {Integer} count 
+ */
+function checkClientFormVisibility(count) {
     let title;
 
     if (count > 0) {
@@ -135,6 +193,11 @@ function checkFormUIVisibility(count) {
 
 //************************************* */
 
+/**
+ * Handle the event of the "delete" button of the selected key
+ * 
+ * @param {Event} event 
+ */
 function onItemDeleteListener(event) {
     let itemId = getItemId(event);
 
@@ -142,31 +205,48 @@ function onItemDeleteListener(event) {
     
     updateUI();
 
-    checkFormUIVisibility(basePage.storage.productsCount);
+    checkClientFormVisibility(basePage.storage.productsCount);
 }
 
+/**
+ * Remove selected item
+ * 
+ * @param {Integer} itemId 
+ * @param {Event} event 
+ */
 function removeItem(itemId, event) {
-    storage.removeProduct(itemId);
+    basePage.storage.removeProduct(itemId);
 
     removeCardUI(event.target.closest("#cart__item_" + itemId));      
 }
 
+/**
+ * Remove element from "cart__items" node
+ * @param {Object} card 
+ */
 function removeCardUI(card) {
     document.getElementById("cart__items").removeChild(card);
 }
 
 //************************************* */
-
+/**
+ * Handle Change Items object "quantity"
+ * 
+ * @param {Event} event 
+ */
 function onItemCountListener(event) {
     let itemId = getItemId(event);
     let quantity = event.target.value;
 
+    // Check if valid quantity of product
     if (quantity >= 1 && quantity <= 100) {
         basePage.storage.updateProductQuantity(itemId, quantity);
 
         updateUI();
     }
     else {
+        event.target.value = basePage.storage.clientCart[itemId].quantity;
+        
         showFormMessage(event.target.id, 
             DialogMSG.FORM_PRODUCT_TITLE_INVALID_QUANTITY, 
             DialogMSG.FORM_PRODUCT_ALERT_QUANTITY);
@@ -174,7 +254,11 @@ function onItemCountListener(event) {
 }
 
 //************************************* */
-
+/**
+ * Return Object Item ID
+ * @param {Event} event 
+ * @returns 
+ */
 function getItemId(event) {
     let id = event.target.id;
     id = id.substring(id.length - 1);   
@@ -182,89 +266,124 @@ function getItemId(event) {
     return parseInt(id);
 }
 
-function getCardQuantity(card) {
-    return card.querySelector("input").getAttribute("value");
-}
-
-function getCardPrice(card) {
-    return parseInt(card.querySelector(".cart__item__content__description :nth-child(3)").innerText);
-}
-
 //************************************* */
 
-function createOrderForm() {
+/**
+ * initializing order form
+ */
+function initOrderForm() {
+    // Create formView Object
     let formView = document.querySelector("form");
-    let formOrderFieldsText = Data.getFormOrderFieldsText(DialogMSG.getFormOrderErrorText());
+    // Create fields texts order form Array
+    let fieldsTextsOrderForm = Data.getFieldsTextsOrderForm(DialogMSG.getFormOrderErrorText());
 
-    form = new FormOrderCart(formView, formOrderFieldsText);
+    // Create FormOrderCart instance
+    form = new FormOrderCart(formView, fieldsTextsOrderForm);
 
     addOrderFormListener(formView);
 }
 
-function addOrderFormListener(formView) {  
+/**
+ * add Order Form Listeners
+ * 
+ * @param {Object} formView 
+ */
+function addOrderFormListener(formView) { 
+    // Add listener for "input" objects 
     formView.addEventListener("input", (event) => {    
-        onFieldChange(event.target);
+        onFormFieldChange(event.target);
     });
 
-    formView.addEventListener("submit", (event) => {   
+    //Add listener for "submit" object
+    formView.addEventListener("submit", (event) => { 
+        // do not use the default action  
         event.preventDefault(); 
 
         onSubmit();
     });
 }
 
-function onFieldChange(target) {  
-    let isValidField = form.checkField(target) ? true : false;
+/**
+ * Handle fields change
+ * 
+ * @param {Object} target 
+ */
+function onFormFieldChange(target) {  
+    // Check if valid field
+    let isValidField = form.onFormFieldChange(target) ? true : false;
 
+    // Create error message for current field
     let message = isValidField ? "" : form.getErrorMessage(target.id);
 
+    // Change error message for current field
     form.setErrorFieldText(target, message);
 }
 
 //************************************* */
 
+/**
+ * Create Object order summary
+ */
 function onSubmit() {
     let products = basePage.storage.cartProductsData;
     let listIds = [];
 
+    // Create list product Ids
     for(let product of products) {
         listIds.push(product._id);
     }
 
-    let submitSummary = {};
-    submitSummary.contact = form.getClientContactData();
-    submitSummary.products = listIds;
+    // Create summuray Object
+    let orderSummary = {};
+    orderSummary.contact = form.getClientContactData();
+    orderSummary.products = listIds;
 
-    console.log("submitSummary new");
-    console.log(submitSummary);
-
-    submitOrder(submitSummary);   
+    submitOrder(orderSummary);   
 }
 
-async function submitOrder(submitSummary) {
-    let result = await basePage.kanapAPI.submitOrder(submitSummary);
+/**
+ * Submit Order
+ * 
+ * @param {Object} orderSummary 
+ */
+async function submitOrder(orderSummary) {
+    // Start Promise to submit order
+    let result = await basePage.kanapAPI.submitOrder(orderSummary);
 
-    console.log("response submitOrder");
-    console.log(result);
-
+    // Check Promise response
     if (result.ok) {
         confirmOrder(result.result);
     }
     else {
+        // Display the error message on UI dialog 
         basePage.showError(result.status, DialogMSG.MSG_ERROR_OCCURED);
     }    
 }
 
+/**
+ * confirm order and change page location
+ * @param {Object} result 
+ */
 function confirmOrder(result) {  
+    // Clear client data in storage instance
     basePage.storage.clearClientCart();
     
+    // Change page location to confirmation page
     document.location.href = "../html/confirmation.html?orderId=" + result.orderId;
 }
 
 //************************************* */
 
-function showFormMessage(elementId, title, message) {
-    basePage.alertDialog.showMessage(title, message); 
+/**
+ * Display the input error message on UI dialog 
+ * 
+ * @param {String} elementId 
+ * @param {String} dialogTitle 
+ * @param {String} dialogMessage 
+ */
+function showFormMessage(elementId, dialogTitle, dialogMessage) {
+    // Show dialog message
+    basePage.dialog.showMessage(dialogTitle, dialogMessage); 
 
     document.getElementById(elementId).focus();
 }

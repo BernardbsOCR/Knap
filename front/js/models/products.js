@@ -1,7 +1,7 @@
 /**
- * Class Product 
+ * Class ProductData 
+ * - Object contain all product data
  */
-
 class ProductData {
     constructor(jsonProduct) {
         jsonProduct && Object.assign(this, jsonProduct);        
@@ -9,7 +9,10 @@ class ProductData {
 }
 
 //************************************* */
-
+/**
+ * Class ProductCardCart 
+ * - Object contain all product data for order cart
+ */
 class ProductCardCart {
     constructor(num, productId, color, quantity) {
         this.num = num;
