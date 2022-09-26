@@ -91,9 +91,13 @@ async function getListProductsData() {
 //************************************* */
 
 /**
+<<<<<<< HEAD
  * Update user interface
  * 
  * @param {array.<ProductData>} product 
+=======
+ * Create user interface
+>>>>>>> main
  */
 function setupUI() {
     createCards();
@@ -104,7 +108,11 @@ function setupUI() {
 }
 
 /**
+<<<<<<< HEAD
  * Update User interface
+=======
+ * Update User Interface
+>>>>>>> main
  */
 function updateUI() {
     document.getElementById("totalQuantity").innerText = basePage.storage.productsCount;
