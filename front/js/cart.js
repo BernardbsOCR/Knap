@@ -191,7 +191,7 @@ function checkClientFormVisibility(count) {
     document.querySelector("#cartAndFormContainer h1").innerText = title;
 }
 
-//************************************* */
+//************************************* */  
 
 /**
  * Handle the event of the "delete" button of the selected key
